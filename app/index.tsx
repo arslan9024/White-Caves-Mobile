@@ -1,69 +1,107 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../src/context/AuthContext';
 
 export default function HomeScreen() {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://api.whitecaves.ae';
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Header */}
+      <StatusBar barStyle="light-content" backgroundColor="#0A0F1D" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Top Header */}
         <View style={styles.header}>
-          <Text style={styles.brandTitle}>WHITE CAVES</Text>
-          <Text style={styles.brandSubtitle}>Luxury Real Estate LLC — Dubai</Text>
-        </View>
-
-        {/* Status Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Mobile Platform Initialized</Text>
-          <Text style={styles.cardText}>
-            Cross-platform React Native engine connected with unified White Caves backend services.
-          </Text>
-
-          <View style={styles.badgeContainer}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>React Native 0.76</Text>
+          <View style={styles.brandingRow}>
+            <Image
+              source={require('../assets/icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <View>
+              <Text style={styles.brandTitle}>WHITE CAVES</Text>
+              <Text style={styles.brandSubtitle}>REAL ESTATE LLC · DUBAI</Text>
             </View>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Expo SDK 52</Text>
-            </View>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Expo Router v4</Text>
-            </View>
+          </View>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>AEGIS V5.0</Text>
           </View>
         </View>
 
-        {/* Backend Connectivity */}
-        <View style={styles.card}>
-          <Text style={styles.sectionHeader}>API Gateway Bridge</Text>
-          <Text style={styles.endpointText}>{apiUrl}</Text>
-          <Text style={styles.helperText}>
-            Bridges directly via Cloudflare Tunnel to your local development server or cloud production cluster.
-          </Text>
+        {/* User Session Banner */}
+        <View style={styles.sessionCard}>
+          <View style={styles.sessionInfo}>
+            <Ionicons
+              name={user ? 'person-circle-outline' : 'shield-outline'}
+              size={36}
+              color="#EF4444"
+            />
+            <View style={styles.sessionText}>
+              <Text style={styles.userName}>
+                {user ? (user.name || user.email) : 'Guest Agent'}
+              </Text>
+              <Text style={styles.userRole}>
+                {user ? `Authenticated · ${user.role || 'Broker'}` : 'Sign in to sync live listings & leads'}
+              </Text>
+            </View>
+          </View>
+          {user ? (
+            <TouchableOpacity style={styles.authBtn} onPress={logout}>
+              <Text style={styles.authBtnText}>Sign Out</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.authBtn} onPress={() => router.push('/login')}>
+              <Text style={styles.authBtnText}>Sign In</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* Fast Action Modules */}
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
-            <Text style={styles.actionButtonTitle}>VIP Leads</Text>
-            <Text style={styles.actionButtonSubtitle}>Instant Lead Routing</Text>
+        {/* Quick Nav Grid */}
+        <Text style={styles.sectionTitle}>COMMAND OPERATIONS</Text>
+        <View style={styles.grid}>
+          <TouchableOpacity
+            style={styles.gridCard}
+            onPress={() => router.push('/leads')}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+              <Ionicons name="people-outline" size={24} color="#EF4444" />
+            </View>
+            <Text style={styles.cardTitle}>Live Leads</Text>
+            <Text style={styles.cardSubtitle}>Inbound inquiries & client matches</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
-            <Text style={styles.actionButtonTitle}>Properties</Text>
-            <Text style={styles.actionButtonSubtitle}>Offplan & Secondary</Text>
+          <TouchableOpacity
+            style={styles.gridCard}
+            onPress={() => router.push('/properties')}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
+              <Ionicons name="business-outline" size={24} color="#3B82F6" />
+            </View>
+            <Text style={styles.cardTitle}>Properties</Text>
+            <Text style={styles.cardSubtitle}>Dubai penthouses, villas & offplan</Text>
           </TouchableOpacity>
+        </View>
 
-          <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
-            <Text style={styles.actionButtonTitle}>Viewings</Text>
-            <Text style={styles.actionButtonSubtitle}>Calendar & Lockboxes</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
-            <Text style={styles.actionButtonTitle}>Contracts</Text>
-            <Text style={styles.actionButtonSubtitle}>Ejari & NOC Vault</Text>
-          </TouchableOpacity>
+        {/* System Telemetry Banner */}
+        <View style={styles.telemetryCard}>
+          <View style={styles.telemetryHeader}>
+            <Ionicons name="pulse" size={16} color="#10B981" />
+            <Text style={styles.telemetryTitle}>AEGIS MESH TELEMETRY</Text>
+          </View>
+          <Text style={styles.telemetryBody}>
+            Connected to 4-tier White Caves mesh. Zero-latency DLD/RERA compliance ledger active.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -73,108 +111,156 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16',
+    backgroundColor: '#0A0F1D',
   },
-  content: {
+  scrollContent: {
     padding: 20,
+    paddingTop: 10,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 24,
+    marginBottom: 20,
+  },
+  brandingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logo: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
   },
   brandTitle: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: '800',
-    color: '#EF4444',
-    letterSpacing: 2,
-  },
-  brandSubtitle: {
-    fontSize: 13,
-    color: '#94A3B8',
-    marginTop: 4,
-    textTransform: 'uppercase',
+    color: '#F8FAFC',
     letterSpacing: 1,
   },
-  card: {
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  cardTitle: {
-    fontSize: 18,
+  brandSubtitle: {
+    fontSize: 9,
     fontWeight: '700',
-    color: '#F8FAFC',
-    marginBottom: 8,
-  },
-  cardText: {
-    fontSize: 14,
     color: '#94A3B8',
-    lineHeight: 20,
-  },
-  badgeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 14,
+    letterSpacing: 1.5,
   },
   badge: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1E293B',
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#334155',
   },
   badgeText: {
-    color: '#38BDF8',
-    fontSize: 12,
-    fontWeight: '600',
+    color: '#EF4444',
+    fontSize: 10,
+    fontWeight: '800',
   },
-  sectionHeader: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#E2E8F0',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 6,
-  },
-  endpointText: {
-    fontSize: 13,
-    color: '#10B981',
-    fontFamily: 'monospace',
-    marginBottom: 6,
-  },
-  helperText: {
-    fontSize: 12,
-    color: '#64748B',
-    lineHeight: 18,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginTop: 8,
-  },
-  actionButton: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: '#1E293B',
+  sessionCard: {
+    backgroundColor: '#111827',
+    borderRadius: 14,
     padding: 16,
-    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#1E293B',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  actionButtonTitle: {
+  sessionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+    marginRight: 10,
+  },
+  sessionText: {
+    flex: 1,
+  },
+  userName: {
+    color: '#F8FAFC',
     fontSize: 16,
     fontWeight: '700',
+  },
+  userRole: {
+    color: '#94A3B8',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  authBtn: {
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  authBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
+  grid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  gridCard: {
+    flex: 1,
+    backgroundColor: '#111827',
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#1E293B',
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardTitle: {
     color: '#F8FAFC',
+    fontSize: 15,
+    fontWeight: '700',
     marginBottom: 4,
   },
-  actionButtonSubtitle: {
-    fontSize: 12,
+  cardSubtitle: {
+    color: '#64748B',
+    fontSize: 11,
+    lineHeight: 15,
+  },
+  telemetryCard: {
+    backgroundColor: '#0F172A',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#1E293B',
+  },
+  telemetryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  telemetryTitle: {
+    color: '#10B981',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  telemetryBody: {
     color: '#94A3B8',
+    fontSize: 12,
+    lineHeight: 17,
   },
 });

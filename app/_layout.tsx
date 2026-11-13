@@ -1,10 +1,10 @@
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { AuthProvider } from '../src/context/AuthContext';
 
 export default function RootLayout() {
   return (
-    <>
-      <StatusBar style="light" />
+    <AuthProvider>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -14,19 +14,13 @@ export default function RootLayout() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          contentStyle: {
-            backgroundColor: '#090D16',
-          },
         }}
       >
-        <Stack.Screen
-          name="index"
-          options={{
-            title: 'White Caves CRM',
-            headerShown: false,
-          }}
-        />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ title: 'Staff Sign In', headerBackVisible: false }} />
+        <Stack.Screen name="leads" options={{ title: 'Leads & Inquiries' }} />
+        <Stack.Screen name="properties" options={{ title: 'Dubai Luxury Inventory' }} />
       </Stack>
-    </>
+    </AuthProvider>
   );
 }
